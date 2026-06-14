@@ -1,40 +1,41 @@
-/**
- * @param {number[]} nums
- * @param {number} target
- * @return {number[]}
- */
 var searchRange = function(nums, target) {
-    let first = -1;
-    let last = -1;
+    return [findFirst(nums, target), findLast(nums, target)];
+};
 
+// Helper function to find the first occurrence
+function findFirst(nums, target) {
     let start = 0;
     let end = nums.length - 1;
-    let mid = undefined;
+    let index = -1;
 
-    while(start <= end) {
-        mid = (start + (end - start) / 2) | 0;
-        console.log(mid, nums[mid])
-        if(target === nums[mid]) {
-            first = mid;
-            last = mid;
+    while (start <= end) {
+        let mid = (start + (end - start) / 2) | 0;
 
-            while(nums[first - 1] === target){
-                first--;
-            }
-
-            while(nums[last +1] === target){
-                last++;
-            }
-
-            return [first,last]
-        }
-
-        if(nums[mid] < target) {
-            start = mid+1
-        }else {
-            end = mid -1
+        if (nums[mid] >= target) {
+            if (nums[mid] === target) index = mid; // Record candidate
+            end = mid - 1; // Keep looking left for an even earlier one!
+        } else {
+            start = mid + 1;
         }
     }
+    return index;
+}
 
-    return [first, last]
-};
+// Helper function to find the last occurrence
+function findLast(nums, target) {
+    let start = 0;
+    let end = nums.length - 1;
+    let index = -1;
+
+    while (start <= end) {
+        let mid = (start + (end - start) / 2) | 0;
+
+        if (nums[mid] <= target) {
+            if (nums[mid] === target) index = mid; // Record candidate
+            start = mid + 1; // Keep looking right for an even later one!
+        } else {
+            end = mid - 1;
+        }
+    }
+    return index;
+}
