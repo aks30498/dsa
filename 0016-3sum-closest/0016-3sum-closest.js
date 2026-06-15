@@ -4,30 +4,34 @@
  * @return {number}
  */
 var threeSumClosest = function (nums, target) {
-    const n = nums.sort((a, b) => a - b);
-
+    // Sort the array in ascending order
+    nums.sort((a, b) => a - b);
+    
     let closest = Number.POSITIVE_INFINITY;
-    const func = (fixed, start, end) => {
-        if (end === start) return;
 
-        const sum = fixed + n[start] + n[end];
+    for (let i = 0; i < nums.length - 2; i++) {
+        let start = i + 1;
+        let end = nums.length - 1;
 
-        if (Math.abs(target - sum) < Math.abs(target - closest)) {
-            closest = sum;
-        }
+        while (start < end) {
+            const sum = nums[i] + nums[start] + nums[end];
 
-        if (sum === target) { return; }
-        else if (sum < target) {
-            func(fixed, start + 1, end);
-        } else {
-            func(fixed, start, end - 1)
+            // If we found an exact match, return immediately
+            if (sum === target) return sum;
+
+            // Update closest if the current sum is nearer to the target
+            if (Math.abs(target - sum) < Math.abs(target - closest)) {
+                closest = sum;
+            }
+
+            // Move pointers based on the sum
+            if (sum < target) {
+                start++;
+            } else {
+                end--;
+            }
         }
     }
 
-    for (let i = 0; i <= n.length - 3 && closest !== target; i++) {
-        func(n[i], i + 1, n.length - 1);
-    }
-
-
-    return closest
+    return closest;
 };
