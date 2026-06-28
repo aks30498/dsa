@@ -1,28 +1,33 @@
-/**
- * @param {number[]} candidates
- * @param {number} target
- * @return {number[][]}
- */
 var combinationSum2 = function (candidates, target) {
     const res = [];
-    candidates.sort((a, b) => a - b);
-    function cs2(startIndex, arr, rt) {
-        if (rt === 0) {
-            res.push([...arr])
+    candidates.sort((a, b) => a - b); // Still need to sort!
+
+    function backtrack(startIndex, currentCombo, remainingTarget) {
+        if (remainingTarget === 0) {
+            res.push([...currentCombo]);
             return;
         }
 
-        if (rt < 0 || startIndex > candidates.length - 1) return;
+        for (let i = startIndex; i < candidates.length; i++) {
+            // EFFICIENCY WIN 1: Big optimization (Pruning)
+            // If the current number is bigger than what we need, 
+            // because the array is sorted, all numbers after it will also be too big.
+            if (candidates[i] > remainingTarget) break;
 
-        arr.push(candidates[startIndex]);
-        cs2(startIndex + 1, arr, rt - candidates[startIndex]);
-        arr.pop();
-        const currVal = candidates[startIndex];
-        while (candidates[startIndex] === currVal) {
-            startIndex++;
+            // EFFICIENCY WIN 2: Skip duplicates at the same tree depth
+            // If this isn't the first element we are trying at this position,
+            // and it's identical to the previous one, skip it.
+            if (i > startIndex && candidates[i] === candidates[i - 1]) {
+                continue;
+            }
+
+            // Move forward
+            currentCombo.push(candidates[i]);
+            backtrack(i + 1, currentCombo, remainingTarget - candidates[i]);
+            currentCombo.pop(); // Backtrack
         }
-        cs2(startIndex, arr, rt);
     }
-    cs2(0, [], target)
+
+    backtrack(0, [], target);
     return res;
 };
