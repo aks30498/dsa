@@ -1,23 +1,28 @@
 var simplifyPath = function (path) {
     const stack = [];
-    // Split the path by '/' to isolate folder names and actions
-    const components = path.split('/');
+    let curr = "";
 
-    for (const part of components) {
-        // If it's empty (from '//') or a single dot (current directory), do nothing
-        if (part === '' || part === '.') {
-            continue;
-        }
-        
-        // If it's a double dot, go up one directory level by popping
-        if (part === '..') {
-            stack.pop(); 
+    // Add a trailing slash to force the loop to process the final segment
+    const modifiedPath = path + "/";
+
+    for (let i = 0; i < modifiedPath.length; i++) {
+        const char = modifiedPath[i];
+
+        if (char === '/') {
+            // We hit a delimiter! Process whatever directory name we built up
+            if (curr === '..') {
+                stack.pop();
+            } else if (curr !== '.' && curr !== '') {
+                stack.push(curr);
+            }
+            
+            // Reset the buffer for the next directory
+            curr = ""; 
         } else {
-            // It's a valid directory name, push it to our stack
-            stack.push(part);
+            // Build the current directory name character by character
+            curr += char;
         }
     }
 
-    // Join elements with '/' and ensure it starts with a leading '/'
     return '/' + stack.join('/');
 };
